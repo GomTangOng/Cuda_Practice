@@ -41,10 +41,7 @@ extern "C" void Init_Histogram()
 		buffer[i] = rand() % 256;
 	}
 
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
-	cudaEventRecord(start, 0);
+
 
 	unsigned char *dev_buffer;
 	unsigned int *dev_histo;
@@ -59,9 +56,13 @@ extern "C" void Init_Histogram()
 	cudaGetDeviceProperties(&prop, 0);
 	int blocks = prop.multiProcessorCount;
 	//cout << "Block ¼ö  : " << blocks << endl;	
-
-	//histo_kernel << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
-	histo_kernel_optimization << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start, 0);
+	
+	histo_kernel << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
+	//histo_kernel_optimization << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
 
 	unsigned int histo[256];
 	cudaMemcpy(histo, dev_histo, 256 * sizeof(int), cudaMemcpyDeviceToHost);

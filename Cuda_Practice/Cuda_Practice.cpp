@@ -9,14 +9,16 @@ extern "C" void cuda_host_alloc_test(int size, bool up);
 extern "C" void cuda_malloc_test(int size, bool up);
 extern "C" void Init_Histogram();
 
-#define SIZE (10*1024*1024)
+#define SIZE (100*1024*1024)
 
 int Histogram_cpu()
 {
-	auto start = GetTickCount();
+	
 	unsigned char *buffer = new unsigned char[SIZE];
 	unsigned int histo[256]{ 0, };
+	long histoCount = 0;
 
+	auto start = GetTickCount();
 	for (int i = 0; i < SIZE; ++i)
 	{
 		unsigned char temp = rand() % 256;
@@ -27,8 +29,6 @@ int Histogram_cpu()
 	{
 		histo[buffer[i]]++;
 	}
-
-	long histoCount = 0;
 
 	for (int i = 0; i < 256; ++i)
 	{
