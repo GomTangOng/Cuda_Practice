@@ -162,6 +162,7 @@
   <ItemGroup>
     <CudaCompile Include="add_example.cu" />
     <CudaCompile Include="cuda_function.cu" />
+    <CudaCompile Include="histogram_atomic.cu" />
     <CudaCompile Include="malloc_vs_host_alloc_test.cu" />
     <CudaCompile Include="shared_memory_example.cu" />
   </ItemGroup>

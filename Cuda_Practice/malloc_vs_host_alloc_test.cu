@@ -15,7 +15,7 @@ extern "C" void cuda_malloc_test(int size, bool up)
 	cudaEventRecord(start, 0);
 	for (int i = 0; i < 100; ++i)
 	{
-		if (up)
+		if (up) 
 			cudaMemcpy(dev_a, a, size * sizeof(*dev_a), cudaMemcpyHostToDevice);
 		else
 			cudaMemcpy(a, dev_a, size * sizeof(*dev_a), cudaMemcpyDeviceToHost);

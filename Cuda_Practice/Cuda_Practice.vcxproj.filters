@@ -49,5 +49,8 @@
     <CudaCompile Include="malloc_vs_host_alloc_test.cu">
       <Filter>Source Files\Cuda</Filter>
     </CudaCompile>
+    <CudaCompile Include="histogram_atomic.cu">
+      <Filter>Source Files\Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
