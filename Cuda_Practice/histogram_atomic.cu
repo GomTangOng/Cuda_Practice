@@ -14,13 +14,31 @@ __global__ void histo_kernel(unsigned char *buffer, int size, unsigned int *hist
 	}
 }
 
+__global__ void histo_kernel_optimization(unsigned char *buffer, int size, unsigned int *histo)
+{
+	__shared__ unsigned int temp[256];
+	temp[threadIdx.x] = 0;
+	__syncthreads();
+
+	int i = threadIdx.x + blockDim.x * blockIdx.x;
+	int stride = blockDim.x * gridDim.x;
+
+	while (i < size)
+	{
+		atomicAdd(&histo[buffer[i]], 1);
+		i += stride;
+	}
+	__syncthreads();
+	atomicAdd(&histo[threadIdx.x], temp[threadIdx.x]);
+}
+
 extern "C" void Init_Histogram()
 {
 	unsigned char *buffer = new unsigned char[SIZE];
 
 	for (int i = 0; i < SIZE; ++i)
 	{
-		buffer[i] = rand() % 'z' + 'a';
+		buffer[i] = rand() % 256;
 	}
 
 	cudaEvent_t start, stop;
@@ -40,8 +58,10 @@ extern "C" void Init_Histogram()
 	cudaDeviceProp prop;
 	cudaGetDeviceProperties(&prop, 0);
 	int blocks = prop.multiProcessorCount;
+	//cout << "Block ¼ö  : " << blocks << endl;	
 
-	histo_kernel << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
+	//histo_kernel << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
+	histo_kernel_optimization << <blocks * 2, 256 >> > (dev_buffer, SIZE, dev_histo);
 
 	unsigned int histo[256];
 	cudaMemcpy(histo, dev_histo, 256 * sizeof(int), cudaMemcpyDeviceToHost);
@@ -51,8 +71,8 @@ extern "C" void Init_Histogram()
 	float elapsedTime;
 	cudaEventElapsedTime(&elapsedTime, start, stop);
 
-	cout << "Time to generate " << elapsedTime << endl;
-
+	//cout << "Time to generate " << elapsedTime << endl;
+	printf("Time to generate : %3.1f ms\n", elapsedTime);
 	long histoCount = 0;
 	for (int i = 0; i < 256; ++i)
 	{

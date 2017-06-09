@@ -7,6 +7,7 @@
 
 #include "targetver.h"
 
+#include <Windows.h>
 #include <cstdio>
 #include <cstdlib>
 #include <tchar.h>
